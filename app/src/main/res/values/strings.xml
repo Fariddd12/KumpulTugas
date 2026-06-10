@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">KumpulTugas</string>
+    <string name="title_main">My Assignments</string>
+    <string name="title_add_task">Add Assignment</string>
+    <string name="title_about">About App</string>
+    <string name="hint_task_name">Assignment Name</string>
+    <string name="hint_priority">Select Priority</string>
+    <string name="btn_submit">Save Assignment</string>
+    <string name="error_empty_title">Assignment name cannot be empty!</string>
+    <string name="error_short_title">Must be at least 3 characters!</string>
+    <string name="about_desc">KumpulTugas is a smart application designed to track college assignments and study milestones, avoiding overdue submissions.</string>
+    <string name="creator">Created by: Ahnaf Farid</string>
+    <string name="share_text">Reminder! Don\'t forget to do your assignment: \"%1$s\" with [%2$s] priority. Let\'s finish it!</string>
+    <string name="empty_state_text">No assignments added yet.</string>
+</resources>
