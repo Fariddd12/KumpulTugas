@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,8 +41,12 @@ fun MainScreen(
                             contentDescription = "Ubah Tampilan"
                         )
                     }
-                    TextButton(onClick = onNavigateToAbout) {
-                        Text("About")
+                    IconButton(onClick = onNavigateToAbout) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Tentang Aplikasi",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )

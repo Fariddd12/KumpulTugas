@@ -1,116 +1,63 @@
 package com.ahnaffarid0098.kumpultugas.ui.screen
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.ahnaffarid0098.kumpultugas.R
 import com.ahnaffarid0098.kumpultugas.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormScreen(navController: NavHostController, viewModel: TaskViewModel) {
-    val priorityOptions = listOf("Tinggi", "Sedang", "Rendah")
-    var expanded by remember { mutableStateOf(false) }
-
-    val errorMessage = when (viewModel.titleError) {
-        "empty" -> stringResource(id = R.string.error_empty_title)
-        "short" -> stringResource(id = R.string.error_short_title)
-        else -> null
-    }
+fun FormScreen(
+    viewModel: TaskViewModel,
+    onNavigateBack: () -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var priority by remember { mutableStateOf("Low") }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(id = R.string.title_add_task)) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
+            TopAppBar(title = { Text("Tambah Tugas") })
         }
-    ) { innerPadding ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
-                value = viewModel.titleInput,
-                onValueChange = { viewModel.onTitleChange(it) },
-                label = { Text(text = stringResource(id = R.string.hint_task_name)) },
-                modifier = Modifier.fillMaxWidth(),
-                isError = errorMessage != null,
-                supportingText = {
-                    if (errorMessage != null) {
-                        Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
-                    }
-                },
-                singleLine = true
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Nama Tugas") },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = viewModel.priorityInput,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(text = stringResource(id = R.string.hint_priority)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable, true),
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    priorityOptions.forEach { selectionOption ->
-                        DropdownMenuItem(
-                            text = { Text(selectionOption) },
-                            onClick = {
-                                viewModel.onPriorityChange(selectionOption)
-                                expanded = false
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                        )
-                    }
+            Text("Prioritas:", style = MaterialTheme.typography.titleMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("Low", "Medium", "High").forEach { level ->
+                    FilterChip(
+                        selected = priority == level,
+                        onClick = { priority = level },
+                        label = { Text(level) }
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = {
-                    val isSuccess = viewModel.validateAndAddTask()
-                    if (isSuccess) {
-                        navController.navigateUp()
+                    if (title.isNotBlank()) {
+                        viewModel.addTask(title, priority)
+                        onNavigateBack()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = stringResource(id = R.string.btn_submit), style = MaterialTheme.typography.titleMedium)
+                Text("Simpan Tugas")
             }
         }
     }
