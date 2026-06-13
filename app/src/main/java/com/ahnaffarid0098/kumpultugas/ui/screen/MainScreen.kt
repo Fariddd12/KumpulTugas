@@ -29,8 +29,6 @@ fun MainScreen(
 ) {
     val tasks by viewModel.allTasks.collectAsState()
     val isGridView by viewModel.isGridView.collectAsState()
-
-    // State untuk menyimpan data tugas yang akan dihapus sementara waktu
     var taskToDelete by remember { mutableStateOf<TaskEntity?>(null) }
 
     Scaffold(
@@ -81,7 +79,7 @@ fun MainScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(tasks) { task ->
-                            // Mengarahkan tombol hapus untuk memicu dialog konfirmasi terlebih dahulu
+
                             TaskItem(task = task, onDelete = { taskToDelete = task })
                         }
                     }
@@ -97,7 +95,6 @@ fun MainScreen(
                 }
             }
 
-            // Komponen Dialog Konfirmasi Hapus
             if (taskToDelete != null) {
                 AlertDialog(
                     onDismissRequest = { taskToDelete = null },
