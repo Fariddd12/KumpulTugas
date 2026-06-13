@@ -14,6 +14,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.ahnaffarid0098.kumpultugas.R
-import com.ahnaffarid0098.kumpultugas.data.Task
+import com.ahnaffarid0098.kumpultugas.data.local.TaskEntity
 import com.ahnaffarid0098.kumpultugas.ui.navigation.Screen
 import com.ahnaffarid0098.kumpultugas.viewmodel.TaskViewModel
 
@@ -34,7 +36,7 @@ import com.ahnaffarid0098.kumpultugas.viewmodel.TaskViewModel
 @Composable
 fun MainScreen(navController: NavHostController, viewModel: TaskViewModel) {
     val context = LocalContext.current
-    val tasks = viewModel.taskList
+    val tasks by viewModel.allTasks.collectAsState()
 
     Scaffold(
         topBar = {
@@ -104,7 +106,7 @@ fun MainScreen(navController: NavHostController, viewModel: TaskViewModel) {
 }
 
 @Composable
-fun TaskItemRow(task: Task, context: Context) {
+fun TaskItemRow(task: TaskEntity, context: Context) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
