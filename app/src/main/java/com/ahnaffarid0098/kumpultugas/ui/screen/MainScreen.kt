@@ -1,117 +1,103 @@
 package com.ahnaffarid0098.kumpultugas.ui.screen
 
-import android.content.Context
-import android.content.Intent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.ahnaffarid0098.kumpultugas.R
 import com.ahnaffarid0098.kumpultugas.data.local.TaskEntity
-import com.ahnaffarid0098.kumpultugas.ui.navigation.Screen
 import com.ahnaffarid0098.kumpultugas.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController, viewModel: TaskViewModel) {
-    val context = LocalContext.current
+fun MainScreen(
+    viewModel: TaskViewModel,
+    onNavigateToForm: () -> Unit,
+    onNavigateToAbout: () -> Unit
+) {
     val tasks by viewModel.allTasks.collectAsState()
+    val isGridView by viewModel.isGridView.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.title_main)) },
+                title = { Text("Kumpul Tugas") },
                 actions = {
-                    IconButton(onClick = { navController.navigate(Screen.About.route) }) {
-                        Icon(imageVector = Icons.Default.Info, contentDescription = "About App")
+                    IconButton(onClick = { viewModel.toggleLayout(!isGridView) }) {
+                        Icon(
+                            imageVector = if (isGridView) Icons.Default.ViewList else Icons.Default.GridView,
+                            contentDescription = "Ubah Tampilan"
+                        )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                    TextButton(onClick = onNavigateToAbout) {
+                        Text("About")
+                    }
+                }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.Form.route) },
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Task", tint = MaterialTheme.colorScheme.onPrimary)
+            FloatingActionButton(onClick = onNavigateToForm) {
+                Icon(Icons.Default.Add, contentDescription = "Tambah Tugas")
             }
         }
-    ) { innerPadding ->
-        Column(
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
-                .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
+                .padding(16.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.img_banner_task),
-                contentDescription = "Banner Kuliah",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             if (tasks.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.empty_state_text),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                }
+                Text(
+                    text = "Belum ada tugas. Klik tombol + untuk menambah.",
+                    modifier = Modifier.align(Alignment.Center),
+                    style = MaterialTheme.typography.bodyLarge
+                )
             } else {
-                tasks.forEach { task ->
-                    TaskItemRow(task = task, context = context)
+                if (isGridView) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(tasks) { task ->
+                            TaskItem(task = task, onDelete = { viewModel.deleteTask(task) })
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(tasks) { task ->
+                            TaskItem(task = task, onDelete = { viewModel.deleteTask(task) })
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(72.dp))
             }
         }
     }
 }
 
 @Composable
-fun TaskItemRow(task: TaskEntity, context: Context) {
+fun TaskItem(task: TaskEntity, onDelete: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
     ) {
         Row(
             modifier = Modifier
@@ -121,38 +107,18 @@ fun TaskItemRow(task: TaskEntity, context: Context) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
+                Text(text = task.title, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = "Prioritas: ${task.priority}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = task.priority,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
             }
-
-            val shareMessage = stringResource(id = R.string.share_text, task.title, task.priority)
-            IconButton(onClick = {
-                val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, shareMessage)
-                }
-                context.startActivity(Intent.createChooser(intent, "Bagikan Tugas"))
-            }) {
+            IconButton(onClick = onDelete) {
                 Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "Share",
-                    tint = MaterialTheme.colorScheme.primary
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Hapus Tugas",
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }

@@ -19,7 +19,11 @@ fun NavGraph(
         startDestination = Screen.Main.route
     ) {
         composable(Screen.Main.route) {
-            MainScreen(navController = navController, viewModel = viewModel)
+            MainScreen(
+                viewModel = viewModel,
+                onNavigateToForm = { navController.navigate(Screen.Form.route) },
+                onNavigateToAbout = { navController.navigate(Screen.About.route) }
+            )
         }
         composable(Screen.Form.route) {
             FormScreen(navController = navController, viewModel = viewModel)
