@@ -30,6 +30,9 @@ fun MainScreen(
     val tasks by viewModel.allTasks.collectAsState()
     val isGridView by viewModel.isGridView.collectAsState()
 
+    // State untuk menyimpan data tugas yang akan dihapus sementara waktu
+    var taskToDelete by remember { mutableStateOf<TaskEntity?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,7 +81,8 @@ fun MainScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(tasks) { task ->
-                            TaskItem(task = task, onDelete = { viewModel.deleteTask(task) })
+                            // Mengarahkan tombol hapus untuk memicu dialog konfirmasi terlebih dahulu
+                            TaskItem(task = task, onDelete = { taskToDelete = task })
                         }
                     }
                 } else {
@@ -87,10 +91,34 @@ fun MainScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(tasks) { task ->
-                            TaskItem(task = task, onDelete = { viewModel.deleteTask(task) })
+                            TaskItem(task = task, onDelete = { taskToDelete = task })
                         }
                     }
                 }
+            }
+
+            // Komponen Dialog Konfirmasi Hapus
+            if (taskToDelete != null) {
+                AlertDialog(
+                    onDismissRequest = { taskToDelete = null },
+                    title = { Text("Hapus Tugas?") },
+                    text = { Text("Apakah Anda yakin ingin menghapus tugas \"${taskToDelete?.title}\"?") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                taskToDelete?.let { viewModel.deleteTask(it) }
+                                taskToDelete = null
+                            }
+                        ) {
+                            Text("Hapus", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { taskToDelete = null }) {
+                            Text("Batal")
+                        }
+                    }
+                )
             }
         }
     }

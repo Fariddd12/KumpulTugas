@@ -15,6 +15,7 @@ fun FormScreen(
 ) {
     var title by remember { mutableStateOf("") }
     var priority by remember { mutableStateOf("Low") }
+    var isError by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -28,12 +29,26 @@ fun FormScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                label = { Text("Nama Tugas") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = {
+                        title = it
+                        if (it.isNotBlank()) isError = false
+                    },
+                    label = { Text("Nama Tugas") },
+                    isError = isError,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (isError) {
+                    Text(
+                        text = "Nama tugas tidak boleh kosong.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+                    )
+                }
+            }
 
             Text("Prioritas:", style = MaterialTheme.typography.titleMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -50,8 +65,10 @@ fun FormScreen(
 
             Button(
                 onClick = {
-                    if (title.isNotBlank()) {
-                        viewModel.addTask(title, priority)
+                    if (title.trim().isBlank()) {
+                        isError = true
+                    } else {
+                        viewModel.addTask(title.trim(), priority)
                         onNavigateBack()
                     }
                 },
