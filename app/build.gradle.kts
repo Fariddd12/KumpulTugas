@@ -52,6 +52,10 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
     implementation(libs.datastore.preferences)
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.logging)
+    implementation(libs.coil.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
