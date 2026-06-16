@@ -6,16 +6,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ahnaffarid0098.kumpultugas.data.local.SettingsDataStore
-import com.ahnaffarid0098.kumpultugas.data.local.TaskDao
-import com.ahnaffarid0098.kumpultugas.data.local.TaskEntity
+import com.ahnaffarid0098.kumpultugas.data.network.*
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class TaskViewModel(
-    private val dao: TaskDao,
-    private val dataStore: SettingsDataStore
+    private val apiService: TaskApiService,
+    private val settingsDataStore: SettingsDataStore,
+    private val userDataStore: UserDataStore
 ) : ViewModel() {
 
     var titleInput by mutableStateOf("")
@@ -36,56 +38,93 @@ class TaskViewModel(
         priorityInput = newValue
     }
 
-    fun validateAndAddTask(): Boolean {
+    var apiStatus by mutableStateOf(ApiStatus.LOADING)
+        private set
+
+    var tasksOnline by mutableStateOf(emptyList<TaskResponse>())
+        private set
+
+    val isListLayout: StateFlow<Boolean> = settingsDataStore.layoutFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val currentUser: StateFlow<User> = userDataStore.userFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), User())
+
+
+    fun getTasksFromServer(email: String) {
+        viewModelScope.launch {
+            apiStatus = ApiStatus.LOADING
+            try {
+                tasksOnline = apiService.getTasks(email)
+                apiStatus = ApiStatus.SUCCESS
+            } catch (e: Exception) {
+                tasksOnline = emptyList()
+                apiStatus = ApiStatus.ERROR
+            }
+        }
+    }
+
+    fun uploadTaskToServer(email: String, imagePart: MultipartBody.Part, onComplete: (Boolean) -> Unit) {
         if (titleInput.isBlank()) {
             titleError = "empty"
-            return false
+            onComplete(false)
+            return
         }
         if (titleInput.length < 3) {
             titleError = "short"
-            return false
+            onComplete(false)
+            return
         }
 
-        insertTask(titleInput, priorityInput)
+        viewModelScope.launch {
+            try {
+                val titleBody = titleInput.trim().toRequestBody(MultipartBody.FORM)
+                val priorityBody = priorityInput.toRequestBody(MultipartBody.FORM)
+                val emailBody = email.toRequestBody(MultipartBody.FORM)
 
-        titleInput = ""
-        priorityInput = "Sedang"
-        titleError = null
-        
-        return true
+                apiService.uploadTask(titleBody, priorityBody, emailBody, imagePart)
+
+                titleInput = ""
+                priorityInput = "Sedang"
+                titleError = null
+
+                getTasksFromServer(email)
+                onComplete(true)
+            } catch (e: Exception) {
+                onComplete(false)
+            }
+        }
     }
 
-    val tasks: StateFlow<List<TaskEntity>> = dao.getTasks()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    fun deleteTaskFromServer(id: Long, email: String, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                apiService.deleteTask(id)
+                getTasksFromServer(email)
+                onComplete()
+            } catch (e: Exception) {
 
-    val isListLayout: StateFlow<Boolean> = dataStore.layoutFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+            }
+        }
+    }
 
     fun toggleLayout(isList: Boolean) {
         viewModelScope.launch {
-            dataStore.saveLayout(isList)
+            settingsDataStore.saveLayout(isList)
         }
     }
 
-    fun insertTask(title: String, priority: String) {
+    fun loginUser(user: User) {
         viewModelScope.launch {
-            dao.insert(TaskEntity(title = title, priority = priority))
+            userDataStore.saveData(user)
+            getTasksFromServer(user.email)
         }
     }
 
-    suspend fun getTaskById(id: Long): TaskEntity? {
-        return dao.getTaskById(id)
-    }
-
-    fun updateTask(id: Long, title: String, priority: String) {
+    fun logoutUser() {
         viewModelScope.launch {
-            dao.update(TaskEntity(id = id, title = title, priority = priority))
-        }
-    }
-
-    fun deleteTask(task: TaskEntity) {
-        viewModelScope.launch {
-            dao.delete(task)
+            userDataStore.saveData(User("", "", ""))
+            tasksOnline = emptyList()
         }
     }
 }
