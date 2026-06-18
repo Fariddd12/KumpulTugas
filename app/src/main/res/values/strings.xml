@@ -2,12 +2,47 @@
     <string name="app_name">KumpulTugas</string>
     <string name="title_main">My Assignments</string>
     <string name="title_add_task">Add Assignment</string>
+    <string name="title_edit_task">Detail &amp; Edit Assignment</string>
     <string name="title_about">About App</string>
+
     <string name="hint_task_name">Assignment Name</string>
+    <string name="hint_description">Assignment Description</string>
     <string name="hint_priority">Select Priority</string>
+    <string name="hint_take_photo">Tap to take photo</string>
+    <string name="hint_image_error">Assignment photo is required!</string>
+
     <string name="btn_submit">Save Assignment</string>
+    <string name="btn_update">Update Assignment</string>
+    <string name="btn_retry">Try again</string>
+    <string name="btn_delete">Delete</string>
+    <string name="btn_logout">Logout</string>
+    <string name="btn_close">Close</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <string name="profile_photo">Profile Photo</string>
+    <string name="guest_user">Guest User</string>
+    <string name="no_email">No email provided</string>
+
     <string name="error_empty_title">Assignment name cannot be empty!</string>
     <string name="error_short_title">Must be at least 3 characters!</string>
+    <string name="error_empty_desc">Description cannot be empty!</string>
+    <string name="error_api_connection">Failed to load data. Connection error.</string>
+    <string name="error_save_failed">Failed to save assignment</string>
+    <string name="error_camera_failed">Failed to take photo from camera</string>
+    <string name="error_incomplete_data">Please complete the red marked fields</string>
+
+    <string name="success_save">Success: Assignment uploaded!</string>
+    <string name="success_update">Success: Assignment updated!</string>
+    <string name="success_delete">Success: Data deleted!</string>
+    <string name="success_logout">Successfully logged out</string>
+    <string name="welcome_user">Welcome, %1$s!</string>
+    <string name="login_warning">Warning: You must login to add data!</string>
+
+    <string name="dialog_delete_title">Delete Confirmation</string>
+    <string name="dialog_delete_message">Are you sure you want to permanently delete \"%1$s\"?</string>
+    <string name="menu_delete">Delete Assignment</string>
+    <string name="menu_layout">Change Layout</string>
+
     <string name="about_desc">KumpulTugas is a smart application designed to track college assignments and study milestones, avoiding overdue submissions.</string>
     <string name="creator">Created by: Ahnaf Farid</string>
     <string name="share_text">Reminder! Don\'t forget to do your assignment: \"%1$s\" with [%2$s] priority. Let\'s finish it!</string>

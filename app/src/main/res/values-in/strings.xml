@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">KumpulTugas</string>
+    <string name="title_main">Tugas Kuliah Saya</string>
+    <string name="title_add_task">Tambah Tugas</string>
+    <string name="title_edit_task">Detail &amp; Edit Tugas</string>
+    <string name="title_about">Tentang Aplikasi</string>
+
+    <string name="hint_task_name">Nama Tugas / Mata Kuliah</string>
+    <string name="hint_description">Deskripsi Tugas</string>
+    <string name="hint_priority">Pilih Prioritas</string>
+    <string name="hint_take_photo">Ketuk untuk Ambil Foto Tugas</string>
+    <string name="hint_image_error">Wajib Ambil Foto Tugas!</string>
+
+    <string name="btn_submit">Simpan Tugas</string>
+    <string name="btn_update">Perbarui Tugas</string>
+    <string name="btn_retry">Coba lagi</string>
+    <string name="btn_delete">Hapus</string>
+    <string name="btn_logout">Logout</string>
+    <string name="btn_close">Tutup</string>
+    <string name="btn_cancel">Batal</string>
+
+    <string name="profile_photo">Foto Profil</string>
+    <string name="guest_user">Pengguna Tamu</string>
+    <string name="no_email">Tidak ada email</string>
+
+    <string name="error_empty_title">Nama tugas tidak boleh kosong!</string>
+    <string name="error_short_title">Minimal harus 3 karakter!</string>
+    <string name="error_empty_desc">Deskripsi tidak boleh kosong!</string>
+    <string name="error_api_connection">Gagal memuat data. Koneksi error.</string>
+    <string name="error_save_failed">Gagal menyimpan tugas</string>
+    <string name="error_camera_failed">Gagal mengambil gambar dari kamera</string>
+    <string name="error_incomplete_data">Mohon lengkapi data yang ditandai merah</string>
+
+    <string name="success_save">Sukses: Tugas berhasil diupload!</string>
+    <string name="success_update">Sukses: Tugas berhasil diperbarui!</string>
+    <string name="success_delete">Sukses: Data berhasil dihapus!</string>
+    <string name="success_logout">Berhasil logout</string>
+    <string name="welcome_user">Selamat datang, %1$s!</string>
+    <string name="login_warning">Peringatan: Anda harus login untuk menambah data!</string>
+
+    <string name="dialog_delete_title">Konfirmasi Hapus</string>
+    <string name="dialog_delete_message">Apakah Anda yakin ingin menghapus data tugas \"%1$s\" secara permanen?</string>
+    <string name="menu_delete">Hapus Tugas</string>
+    <string name="menu_layout">Ubah Layout</string>
+
+    <string name="about_desc">KumpulTugas adalah aplikasi cerdas yang dirancang untuk melacak tugas kuliah dan capaian belajar mandiri agar terhindar dari keterlambatan pengumpulan.</string>
+    <string name="creator">Dibuat oleh: Ahnaf Farid</string>
+    <string name="share_text">Pengingat! Jangan lupa kerjakan tugas kuliah: \"%1$s\" dengan prioritas [%2$s]. Yuk, beresin!</string>
+    <string name="empty_state_text">Belum ada tugas kuliah yang ditambahkan.</string>
+</resources>
